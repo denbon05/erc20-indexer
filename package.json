@@ -10,15 +10,24 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^2.4.6",
+    "@types/node": "^20.6.0",
     "alchemy-sdk": "^2.2.5",
     "ethers": "^5.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.26",
-    "@types/react-dom": "^18.0.9",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@vitejs/plugin-react": "^3.0.0",
+    "eslint": "^8.49.0",
+    "eslint-config-standard-with-typescript": "^39.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-n": "^16.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.33.2",
+    "typescript": "^5.2.2",
     "vite": "^4.0.0"
   }
 }

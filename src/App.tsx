@@ -6,14 +6,21 @@ import {
   Heading,
   Image,
   Input,
+  ListItem,
   SimpleGrid,
   Text,
   UnorderedList,
-  ListItem,
 } from "@chakra-ui/react";
-import { TokenBalance, TokenMetadataResponse, Utils } from "alchemy-sdk";
+import {
+  Network,
+  TokenBalance,
+  TokenMetadataResponse,
+  Utils,
+} from "alchemy-sdk";
 import React, { useState } from "react";
-import { getTokenBalance, config } from "./api";
+import { getTokenBalance } from "./api";
+import { config } from "./api/eth";
+import WalletConnector from "./components/WalletConnector";
 
 function App() {
   const [userAddress, setUserAddress] = useState("");
@@ -21,26 +28,36 @@ function App() {
   const [tokenDataObjects, setTokenDataObjects] = useState<
     TokenMetadataResponse[]
   >([]);
-  const [hasQueried, setHasQueried] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
 
   let exampleContractAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
   let exampleEOAAddress = "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8";
 
-  if (config.network === "eth-goerli") {
+  if (config.network === Network.ETH_GOERLI) {
     // rewrite example addresses
     exampleContractAddress = "0xc81B5771226a0F2F9ef0beA27bAC64B3236071F0";
     exampleEOAAddress = "0x9Ff92bD4DB733Aa7F2077D45eBd8674fb20425ae";
   }
 
-  async function fetchTokenBalance() {
-    const { tokenBalances, tokenData } = await getTokenBalance(userAddress);
-    setTokenBalances(tokenBalances);
-    setTokenDataObjects(tokenData);
-    setHasQueried(true);
+  async function fetchTokenBalance(address = userAddress) {
+    setIsLoading(true);
+    try {
+      const { tokenBalances, tokenData } = await getTokenBalance(address);
+      setTokenBalances(tokenBalances);
+      setTokenDataObjects(tokenData);
+    } catch (err) {
+      console.error(err);
+      setErrMsg(err.message);
+    }
+    setIsLoading(false);
   }
 
   return (
     <Box w="100vw">
+      <Box ml={50}>
+        <WalletConnector fetchTokenBalance={fetchTokenBalance} />
+      </Box>
       <Center>
         <Flex
           alignItems={"center"}
@@ -86,23 +103,24 @@ function App() {
         />
         <Button
           fontSize={20}
-          onClick={fetchTokenBalance}
+          onClick={() => fetchTokenBalance(userAddress)}
           mt={36}
-          bgColor="blue"
+          bgColor="gray"
+          isLoading={isLoading}
         >
           Check ERC-20 Token Balances
         </Button>
 
         <Heading my={36}>ERC-20 token balances:</Heading>
 
-        {hasQueried ? (
+        {!isLoading ? (
           <SimpleGrid w={"90vw"} columns={4} spacing={24}>
             {tokenBalances.map((e, i) => {
               return (
                 <Flex
                   flexDir={"column"}
                   color="white"
-                  bg="blue"
+                  bg="gray"
                   w={"20vw"}
                   key={e.contractAddress}
                 >
@@ -116,13 +134,13 @@ function App() {
                       tokenDataObjects[i].decimals ?? 0,
                     )}
                   </Box>
-                  <Image src={tokenDataObjects[i].logo ?? ''} />
+                  <Image src={tokenDataObjects[i].logo ?? ""} />
                 </Flex>
               );
             })}
           </SimpleGrid>
         ) : (
-          "Please make a query! This may take a few seconds..."
+          errMsg || "Please make a query! This may take a few seconds..."
         )}
       </Flex>
     </Box>

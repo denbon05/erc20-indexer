@@ -1,6 +1,9 @@
 # Simple ERC-20 Indexer
 
-This is an skeleton app that uses the Alchemy SDK rigged to Alchemy's Enhanced APIs in order to display all of an address's ERC-20 token balances.
+This is an skeleton app that uses the Alchemy SDK rigged to Alchemy's Enhanced APIs in order to display all of an address's:
+
+- ERC-20 token balances;
+- ERC-721 tokens, including a call to any image attached to their metadata;
 
 ## Set Up
 
@@ -15,7 +18,7 @@ We purposefully built this app to be minimalistic so that you can get some softw
 
 Here are a few challenge suggestions:
 
-- [x] Add Wallet integration so that any user that connects their wallet can check their ERC-20 token balance
+- [x] Add Wallet integration so that any user that connects their wallet can check their ERC-20/NFTs token balance
 - [x] There is no indication of a request in progress... that's bad UX! Do you think you can add some sort of indication of loading?
 - [x] Add some styling! 🎨
 - [x] The token balances can sometimes be a little long and break the outline of the page... can you fix that? 🔧

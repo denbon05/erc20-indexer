@@ -1,7 +1,8 @@
+import { TokenStandard } from "../types/token";
 import { alchemy } from "./eth";
 
-export async function getTokenBalance(userAddress: string) {
-  const { tokenBalances } = await alchemy.core.getTokenBalances(userAddress);
+const fetchERC20 = async (address: string) => {
+  const { tokenBalances } = await alchemy.core.getTokenBalances(address);
 
   const tokenDataPromises = tokenBalances.map(({ contractAddress }) =>
     alchemy.core.getTokenMetadata(contractAddress),
@@ -12,4 +13,27 @@ export async function getTokenBalance(userAddress: string) {
     tokenBalances,
     tokenData,
   };
-}
+};
+
+const fetchERC721 = async (address: string) => {
+  const nfts = await alchemy.nft.getNftsForOwner(address);
+
+  return {
+    tokenBalances: nfts.ownedNfts,
+    tokenData: null,
+  };
+};
+
+export const getTokenBalance = async (
+  userAddress: string,
+  standard: TokenStandard,
+) => {
+  switch (standard) {
+    case TokenStandard.ERC20:
+      return fetchERC20(userAddress);
+    case TokenStandard.ERC721:
+      return fetchERC721(userAddress);
+    default:
+      throw new Error(`Unrecognized token standard: "${standard}"`);
+  }
+};
